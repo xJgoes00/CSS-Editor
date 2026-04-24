@@ -1,7 +1,7 @@
 # CSV Editor for work
 CSV repo for easy handling
 
-You can access the site by visiting https://xjgoes00.github.io/CSS-Editor/
+You can access the site by visiting https://xjgoes00.github.io/CSV-Editor/
 
 interface preview 
 pc
