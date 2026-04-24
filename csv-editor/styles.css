@@ -1,0 +1,609 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --excel-green: #217346;
+    --excel-green-light: #2d9b5e;
+    --toolbar-bg: #f3f3f3;
+    --cell-selected: #e8f0fe;
+    --cell-active-border: #217346;
+    --cell-border: #d6d6d6;
+    --header-bg: #e6e6e6;
+    --header-hover: #d0d0d0;
+    --formula-bg: #ffffff;
+    --text-primary: #1a1a1a;
+    --text-secondary: #555;
+    --cell-bg: #ffffff;
+    --grid-bg: #ffffff;
+    --context-bg: #ffffff;
+    --context-hover: #f0f0f0;
+    --context-border: #ccc;
+    --tab-bg: #f3f3f3;
+    --tab-active-bg: #ffffff;
+    --input-bg: #ffffff;
+    --shadow: rgba(0,0,0,0.12);
+}
+
+[data-theme="dark"] {
+    --excel-green: #4ecca3;
+    --excel-green-light: #5ee0b5;
+    --toolbar-bg: #2b2b2b;
+    --cell-selected: #2a3a2e;
+    --cell-active-border: #4ecca3;
+    --cell-border: #444;
+    --header-bg: #333;
+    --header-hover: #3e3e3e;
+    --formula-bg: #2b2b2b;
+    --text-primary: #e0e0e0;
+    --text-secondary: #aaa;
+    --cell-bg: #1e1e1e;
+    --grid-bg: #1e1e1e;
+    --context-bg: #2b2b2b;
+    --context-hover: #383838;
+    --context-border: #555;
+    --tab-bg: #2b2b2b;
+    --tab-active-bg: #1e1e1e;
+    --input-bg: #2b2b2b;
+    --shadow: rgba(0,0,0,0.4);
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--grid-bg);
+    overflow: hidden;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    background: var(--toolbar-bg);
+    border-bottom: 1px solid var(--cell-border);
+    gap: 8px;
+}
+
+.toolbar-left, .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--excel-green);
+    margin-right: 16px;
+    user-select: none;
+    letter-spacing: -0.3px;
+}
+
+.toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.1s, border-color 0.1s;
+    font-family: inherit;
+}
+
+.toolbar-btn:hover {
+    background: var(--header-hover);
+    border-color: var(--cell-border);
+}
+
+.toolbar-btn:active {
+    background: var(--header-bg);
+}
+
+.toolbar-btn.icon-only {
+    padding: 5px 7px;
+}
+
+.toolbar-btn svg {
+    flex-shrink: 0;
+}
+
+.separator {
+    width: 1px;
+    height: 20px;
+    background: var(--cell-border);
+    margin: 0 4px;
+}
+
+/* ── Toggle Switch ── */
+.toggle-switch {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-track {
+    display: flex;
+    align-items: center;
+    width: 48px;
+    height: 26px;
+    background: var(--cell-border);
+    border-radius: 26px;
+    position: relative;
+    transition: background 0.3s;
+}
+
+[data-theme="dark"] .toggle-track {
+    background: var(--excel-green);
+}
+
+.toggle-thumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    left: 2px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .toggle-thumb {
+    transform: translateX(22px);
+}
+
+.toggle-thumb .icon-sun {
+    color: #f59e0b;
+}
+
+.toggle-thumb .icon-moon {
+    color: #6366f1;
+    display: none;
+}
+
+[data-theme="dark"] .toggle-thumb .icon-sun {
+    display: none;
+}
+
+[data-theme="dark"] .toggle-thumb .icon-moon {
+    display: block;
+}
+
+/* ── Formula Bar ── */
+.formula-bar {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--cell-border);
+    background: var(--formula-bg);
+}
+
+.cell-ref {
+    width: 60px;
+    text-align: center;
+    font-size: 12px;
+    padding: 4px 0;
+    border-right: 1px solid var(--cell-border);
+    background: var(--toolbar-bg);
+    color: var(--text-secondary);
+    user-select: none;
+    font-weight: 600;
+}
+
+#formula-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 4px 8px;
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+/* ── Grid ── */
+.grid-container {
+    flex: 1;
+    overflow: auto;
+    position: relative;
+    background: var(--grid-bg);
+}
+
+.grid {
+    display: inline-grid;
+    position: relative;
+    user-select: none;
+}
+
+/* Corner cell */
+.corner-cell {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    background: var(--header-bg);
+    border-right: 1px solid var(--cell-border);
+    border-bottom: 1px solid var(--cell-border);
+    width: 46px;
+    min-width: 46px;
+}
+
+/* Column headers */
+.col-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--header-bg);
+    border-right: 1px solid var(--cell-border);
+    border-bottom: 1px solid var(--cell-border);
+    text-align: center;
+    padding: 3px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    user-select: none;
+    cursor: pointer;
+    min-width: 90px;
+}
+
+.col-header:hover {
+    background: var(--header-hover);
+}
+
+.col-header.selected {
+    background: var(--cell-active-border);
+    color: #fff;
+}
+
+/* Row headers */
+.row-header {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--header-bg);
+    border-right: 1px solid var(--cell-border);
+    border-bottom: 1px solid var(--cell-border);
+    text-align: center;
+    padding: 2px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    user-select: none;
+    cursor: pointer;
+    width: 46px;
+    min-width: 46px;
+}
+
+.row-header:hover {
+    background: var(--header-hover);
+}
+
+.row-header.selected {
+    background: var(--cell-active-border);
+    color: #fff;
+}
+
+/* Cells */
+.cell {
+    border-right: 1px solid var(--cell-border);
+    border-bottom: 1px solid var(--cell-border);
+    padding: 2px 5px;
+    font-size: 13px;
+    min-width: 90px;
+    min-height: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: cell;
+    background: var(--cell-bg);
+    color: var(--text-primary);
+}
+
+.cell.selected {
+    background: var(--cell-selected);
+}
+
+.cell.active {
+    outline: 2px solid var(--cell-active-border);
+    outline-offset: -1px;
+    z-index: 1;
+    position: relative;
+}
+
+.cell.editing {
+    background: var(--cell-bg);
+    overflow: visible;
+    white-space: pre;
+    outline: none;
+}
+
+.cell.editing .editor-input {
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 100%;
+    font-size: 13px;
+    font-family: inherit;
+    padding: 0;
+    background: transparent;
+    color: var(--text-primary);
+}
+
+/* Selection highlight for range */
+.cell.in-range {
+    background: rgba(78, 204, 163, 0.08);
+}
+
+[data-theme="dark"] .cell.in-range {
+    background: rgba(78, 204, 163, 0.12);
+}
+
+/* ── Sheet Bar ── */
+.sheet-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--toolbar-bg);
+    border-top: 1px solid var(--cell-border);
+    padding: 4px 8px;
+}
+
+.sheet-tabs-scroll {
+    flex: 1;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.sheet-tabs-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.sheet-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+}
+
+.sheet-tab {
+    padding: 5px 16px;
+    border: 1px solid var(--cell-border);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    background: var(--tab-bg);
+    font-size: 11px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--text-secondary);
+    position: relative;
+    user-select: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.sheet-tab.active {
+    background: var(--tab-active-bg);
+    color: var(--excel-green);
+    font-weight: 600;
+    border-bottom: 1px solid var(--tab-active-bg);
+    margin-bottom: -1px;
+}
+
+.sheet-tab.multi-selected {
+    background: rgba(33, 115, 70, 0.15);
+    border-color: var(--excel-green);
+    color: var(--excel-green);
+}
+
+[data-theme="dark"] .sheet-tab.multi-selected {
+    background: rgba(78, 204, 163, 0.15);
+}
+
+.sheet-tab.dragging {
+    opacity: 0.85;
+    transform: scale(1.05) translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    z-index: 10;
+    position: relative;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.sheet-tab.drag-over {
+    border-left: 3px solid var(--excel-green);
+}
+
+.sheet-tab-rename {
+    border: 1px solid var(--excel-green);
+    border-radius: 2px;
+    padding: 2px 4px;
+    font-size: 11px;
+    font-family: inherit;
+    width: 80px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    outline: none;
+}
+
+.sheet-add-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--excel-green);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    margin-left: 4px;
+}
+
+.sheet-add-btn:hover {
+    background: var(--header-hover);
+}
+
+.status-info {
+    display: flex;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* ── Context Menu ── */
+.context-menu {
+    position: fixed;
+    background: var(--context-bg);
+    border: 1px solid var(--context-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px var(--shadow);
+    padding: 4px 0;
+    z-index: 100;
+    min-width: 180px;
+    font-size: 12px;
+    color: var(--text-primary);
+}
+
+.context-menu-item {
+    padding: 6px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.context-menu-item:hover {
+    background: var(--context-hover);
+}
+
+.context-menu-sep {
+    height: 1px;
+    background: var(--cell-border);
+    margin: 4px 0;
+}
+
+/* ── Toast ── */
+.toast {
+    position: fixed;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--excel-green);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 200;
+}
+
+.toast.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ── Support Toast ── */
+.support-toast {
+    position: fixed;
+    bottom: 50px;
+    right: 16px;
+    background: var(--context-bg);
+    border: 1px solid var(--context-border);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px var(--shadow);
+    padding: 16px 18px 14px;
+    z-index: 150;
+    text-align: center;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+    max-width: 170px;
+}
+
+.support-toast.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.support-close {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.support-close:hover {
+    color: var(--text-primary);
+}
+
+.support-text {
+    font-size: 13px;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.support-qr {
+    border-radius: 6px;
+    margin-bottom: 8px;
+    width: 100px;
+    height: 100px;
+    image-rendering: pixelated;
+}
+
+.support-link {
+    display: block;
+    font-size: 10px;
+    color: var(--excel-green);
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.support-link:hover {
+    text-decoration: underline;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .toolbar {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+    .toolbar-btn span {
+        display: none;
+    }
+    .logo {
+        font-size: 13px;
+        margin-right: 8px;
+    }
+}
